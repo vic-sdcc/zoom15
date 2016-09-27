@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <ui:composition template="/templates/layout.xhtml">
+        <ui:define name="top">
+            #{bundle.Recommendation}
+        </ui:define>
+        <ui:define id="mainRecommendationContent" name="content">
+            <f:event type="preRenderView" listener="#{recommendationBean.init}"/>
+            <h:form id="mainRecommendationForm">
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="Select DC:" rendered="true"/>
+                    <p:selectOneMenu id="dcList" 
+                                     value="#{recommendationBean.orgUnit.ouCode}"
+                                     rendered="true">
+                        <f:selectItems value="#{recommendationBean.orgUnitList}"
+                                       var="dc"
+                                       itemLabel="#{dc.ouCode}"
+                                       itemValue="#{dc.ouCode}"/>
+                    </p:selectOneMenu>
+                    <h:outputLabel value="Select PT:" rendered="true"/>
+                    <p:selectOneMenu id="ptList" 
+                                     value="#{recommendationBean.orgUnit.ouCode}"
+                                     rendered="true">
+                        <f:selectItems value="#{recommendationBean.orgUnitList}"
+                                       var="pt"
+                                       itemLabel="#{pt.ouCode}"
+                                       itemValue="#{pt.ouCode}"/>
+                    </p:selectOneMenu>
+                </h:panelGrid>
+                <br/>
+                <p:dataTable id="prospectList"
+                             value="#{recommendationBean.prospectList}"
+                             var="pList"
+                             scrollHeight="200"
+                             scrollRows="100"
+                             scrollable="true"
+                             liveScroll="true"
+                             rowIndexVar="rowIndex"
+                             rowKey="#{pList.prospectNo}"
+                             selectionMode="single"
+                             selection="#{recommendationBean.selectedProspect}">
+                    <p:ajax event="rowSelect"
+                            async="true"
+                            update=":mainRecommendationForm"/>
+                    <p:column headerText="Name">
+                        <h:outputText value="#{pList.lastName}, #{pList.firstName} #{pList.middleName}"/>
+                    </p:column>
+                    <p:column headerText="Prospect #">
+                        <h:outputText value="#{pList.prospectNo}"/>
+                    </p:column>
+                </p:dataTable>
+                <br/>
+                <h:outputLabel value="PT #: #{recommendationBean.selectedProspect.prospectNo}" style="font-size: medium" rendered="#{not empty recommendationBean.selectedProspect.prospectNo}"/>
+                <br/>
+                <h:outputLabel value="Name: #{recommendationBean.selectedProspect.lastName}, #{recommendationBean.selectedProspect.firstName} #{recommendationBean.selectedProspect.middleName}" style="font-size: medium"
+                               rendered="#{not empty recommendationBean.selectedProspect.prospectNo}"/>
+                <br/><br/>
+                <h:panelGrid columns="1">
+                    <h:panelGrid columns="4">
+                        <h:outputLabel value="Recommendation:" rendered="true"/>
+
+                        <p:calendar id="planEncoded"
+                                    value="#{recommendationBean.report.reportDateEncoded}"
+                                    required="true"
+                                    navigator="true"
+                                    mode="popup"
+                                    pattern="MMM dd yyyy"
+                                    yearRange="c-1:c+5"
+                                    size="10">
+                            <f:convertDateTime pattern="MMM dd yyyy"/>
+                        </p:calendar>
+
+
+                        <p:calendar value="#{recommendationBean.report.reportDateEncoded}" style="margin-left: 90px">
+                            <f:convertDateTime pattern="MMM dd yyyy"/>
+                        </p:calendar>
+                        <h:outputLabel id="ptenc" value="#{currentDate}" style="margin-left: 5px">
+                            <f:convertDateTime pattern="hh:mm"/>
+                        </h:outputLabel>
+                    </h:panelGrid>
+                    <p:inputTextarea cols="50" rows="10" readonly="false" value="#{recommendationBean.report.reportDtl}">
+                    </p:inputTextarea>
+                    <h:panelGrid columns="3">
+                        <h:outputLabel value="DC remarks:" rendered="true"/>
+                        <h:outputLabel value="#{currentDate}" style="margin-left: 120px">
+                            <f:convertDateTime pattern="MMM dd yyyy"/>
+                        </h:outputLabel>
+                        <h:outputLabel value="#{currentDate}" style="margin-left: 5px">
+                            <f:convertDateTime pattern="hh:mm"/>
+                        </h:outputLabel>
+                    </h:panelGrid>
+                    <p:inputTextarea cols="50" rows="10" readonly="false" rendered="true">
+                    </p:inputTextarea>
+                    <h:outputLabel value="Endorse to PKPTL" rendered="true"/>
+                    <h:panelGrid columns="2" rendered="true">
+                        <h:outputLabel value="Endorse to PKPTL"/>
+                        <p:selectBooleanCheckbox/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="3">
+                        <h:outputLabel value="PKPTL remarks:" rendered="true"/>
+                        <h:outputLabel value="#{currentDate}" style="margin-left: 100px">
+                            <f:convertDateTime pattern="MMM dd yyyy"/>
+                        </h:outputLabel>
+                        <h:outputLabel value="#{currentDate}" style="margin-left: 5px">
+                            <f:convertDateTime pattern="hh:mm"/>
+                        </h:outputLabel>
+                    </h:panelGrid>
+                    <p:inputTextarea cols="50" rows="10" readonly="false" rendered="true">
+                    </p:inputTextarea>
+                    <h:panelGrid columns="2" rendered="true">
+                        <h:outputLabel value="Approved for application"/>
+                        <p:selectBooleanCheckbox/>
+                    </h:panelGrid>
+                </h:panelGrid>
+
+                <h:commandButton value="SAVE" action="#{recommendationBean.saveRecommendation}"/>
+                <h:commandButton value="VIEW" action="/xhtml/viewRecommendation.xhtml"/>
+
+                <h:commandButton value="CANCEL" action="#{recommendationBean.beanclear}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
